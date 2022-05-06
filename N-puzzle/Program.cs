@@ -5,15 +5,30 @@ namespace N_puzzle
 {
     class Program
     {
-        static bool isSolvable(int[,] puzzle)
+        static bool isSolvable(int[] puzzle,int size,int index)
         {
             int inversions = 0;
-            for (int i = 0; i < 3 - 1; i++)
-                for (int j = i + 1; j < 3; j++)
-                    if (puzzle[j, i] > 0 && puzzle[j, i] > puzzle[i, j])
+            for (int i = 0; i < size*size - 1; i++)
+                for (int j = i + 1; j < size*size; j++) {
+                    if (puzzle[i] != 0 && puzzle[j]!=0 && puzzle[i] > puzzle[j])
                     {
+                        Console.WriteLine(puzzle[i]);
+                        Console.WriteLine(puzzle[j]);
                         inversions++;
                     }
+                }
+            if(size%2==0 && inversions%2==0 && (size-index) % 2 == 0)
+            {
+                return false;
+            }else if(size % 2 == 0 && inversions % 2 != 0 && (size - index) % 2 == 0)
+            {
+                return true;
+            }
+            else if (size % 2 == 0 && inversions % 2 == 0 && (size - index) % 2 != 0)
+            {
+                return true;
+            }
+            Console.WriteLine(inversions);
             return (inversions % 2 == 0);
         }
 
@@ -23,32 +38,50 @@ namespace N_puzzle
             int n;
             StreamReader sr;
             string line;
-            file = new FileStream("8 Puzzle (1).txt", FileMode.Open, FileAccess.Read);
+            file = new FileStream("50 Puzzle.txt", FileMode.Open, FileAccess.Read);
             string[,] puzzle;
             sr = new StreamReader(file);
             line = sr.ReadLine();
             n = int.Parse(line);
             puzzle = new string[n, n];
-            line = sr.ReadLine();
 
-            for (int i = 0; i < n; i++)
+            //line = sr.ReadLine();
+            line = sr.ReadLine();
+            if (line != "")
+            {
+
+            }
+            else
             {
                 line = sr.ReadLine();
+            }
+                int zeroIndex=0;
+            
+            for (int i = 0; i < n; i++)
+            {    
                 string[] vertices = line.Split(' ');
                 for (int j = 0; j < n; j++)
                 {
                     puzzle[i, j] = vertices[j];
                 }
+                line = sr.ReadLine();
             }
-            int[,] puz = new int[n, n];
+            int[,] puz2d = new int[n, n];
+            int[] puz1d = new int[n * n];
+            int k = 0;
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < n; j++)
                 {
-                    puz[i, j] = Int32.Parse(puzzle[i, j]);
+                    puz2d[i, j] = Int32.Parse(puzzle[i, j]);
+                    if (puz2d[i, j] == 0)
+                    {
+                        zeroIndex = i;
+                    }
+                    puz1d[k++] = Int32.Parse(puzzle[i, j]);
                 }
             }
-            if (isSolvable(puz))
+            if (isSolvable(puz1d,n,zeroIndex))
                 Console.WriteLine("Solvable");
             else
                 Console.WriteLine("Not Solvable");
