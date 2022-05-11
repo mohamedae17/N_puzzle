@@ -32,6 +32,24 @@ namespace N_puzzle
             return (inversions % 2 == 0);
         }
 
+        static int calculateHamming(int[] puzzle)
+        {
+            int hamming = 0;
+            for (int i = 0; i < puzzle.Length - 1; i++)
+            {
+                if (i + 1 == puzzle[i] && puzzle[i] != 0)
+                {
+
+                }
+                else
+                {
+                    hamming = hamming + 1;
+                }
+            }
+            return hamming;
+        }
+
+
         static void Main(string[] args)
         {
             FileStream file;
