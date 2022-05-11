@@ -49,6 +49,27 @@ namespace N_puzzle
             return hamming;
         }
 
+        static int calculateMenhatten(int[,] puzzle, int size)
+        {
+            int DistanceSum = 0;
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (puzzle[i, j] != 0)
+                    {
+                        int x = (puzzle[i, j] - 1) / size;
+                        int y = (puzzle[i, j] - 1) % size;
+                        int dx = x - i;
+                        int dy = y - j;
+                        DistanceSum += Math.Abs(dx) + Math.Abs(dy);
+                        //total_distance += ABS(x, i) + ABS(y, j);
+                    }
+                }
+            }
+            return DistanceSum;
+        }
+
 
         static void Main(string[] args)
         {
