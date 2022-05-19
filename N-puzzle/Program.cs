@@ -94,6 +94,45 @@ namespace N_puzzle
             return (inversions % 2 == 0);
         }
 
+        static int calculateHamming(int[] puzzle)
+        {
+            int hamming = 0;
+            for (int i = 0; i < puzzle.Length - 1; i++)
+            {
+                if (i + 1 == puzzle[i] && puzzle[i] != 0)
+                {
+
+                }
+                else
+                {
+                    hamming = hamming + 1;
+                }
+            }
+            return hamming;
+        }
+
+        static int calculateMenhatten(int[,] puzzle, int size)
+        {
+            int DistanceSum = 0;
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (puzzle[i, j] != 0)
+                    {
+                        int x = (puzzle[i, j] - 1) / size;
+                        int y = (puzzle[i, j] - 1) % size;
+                        int dx = x - i;
+                        int dy = y - j;
+                        DistanceSum += Math.Abs(dx) + Math.Abs(dy);
+                        //total_distance += ABS(x, i) + ABS(y, j);
+                    }
+                }
+            }
+            return DistanceSum;
+        }
+
+
         static void Main(string[] args)
         {
             FileStream file;
