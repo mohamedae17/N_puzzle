@@ -7,6 +7,8 @@ namespace N_puzzle
 {
     class Program
     {
+        public static global::System.Object Console { get; private set; }
+
         static bool goal(int[,] puzzle, int size)
         {
             int goal = 1;
@@ -20,6 +22,30 @@ namespace N_puzzle
             }
             return true;
         }
+        static HashSet<int> myhash1 = new HashSet<int>();
+        public static int g = 0;
+        public static int[,] goal;
+        public static void initial_state(int[,] puzzle, int n)
+        {
+            goal = new int[n, n];
+            int num = 1;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    goal[i, j] = num;
+                    num++;
+                }
+            }
+            goal[n - 1, n - 1] = 0;
+            Node intial = new Node(puzzle, null, g, 'R');
+            myhash1.Add(GG(intial.state));
+            pQ.Enqueue(intial);
+           // swap(intial, n);
+        }
+
+
+
         static int ASTAR(int[,] puzzle, int size)
         {
             int g = 0, h = 0;
@@ -55,7 +81,7 @@ namespace N_puzzle
         static int calculateHamming(int[] puzzle)
         {
             int hamming = 0;
-            for(int i = 0; i < puzzle.Length-1; i++)
+            for (int i = 0; i < puzzle.Length - 1; i++)
             {
                 if(i+1 == puzzle[i] && puzzle[i]!=0)
                 {
@@ -156,7 +182,7 @@ namespace N_puzzle
                 stopwatch.Start();
 
                 Console.WriteLine("Solvable");
-                //initial_state(puzzle, n);
+                initial_state(puzzle, n);
 
                 stopwatch.Stop();
                 Console.WriteLine("Elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds);
