@@ -25,6 +25,8 @@ namespace N_puzzle
         static HashSet<int> myhash1 = new HashSet<int>();
         public static int g = 0;
         public static int[,] goal;
+
+        // first state to solve
         public static void initial_state(int[,] puzzle, int n)
         {
             goal = new int[n, n];
