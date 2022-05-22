@@ -14,14 +14,19 @@ namespace N_puzzle
         public int[,] state;
         public char come_from;
 
-
-        public Node(int[,] puzzle, Node parent, int g, char came_from)
+        public Node(int[,] puzzle, Node parent, int g, char came_from, int a)
         {
             this.g = g;
-            this.h = calculateHamming(puzzle);
-            this.M = calculateMenhatten(puzzle);
-            this.cost = this.M + this.g;
-            //this.cost = this.h + this.g;
+            if (a == 1)
+            {
+                this.h = calculateHamming(puzzle);
+                this.cost = this.h + this.g;
+            }
+            else if (a == 2)
+            {
+                this.M = calculateMenhatten(puzzle);
+                this.cost = this.M + this.g;
+            }
             this.parent = parent;
             this.state = puzzle;
             this.come_from = came_from;
@@ -37,35 +42,45 @@ namespace N_puzzle
                 }
                 Console.WriteLine();
             }
+            Console.WriteLine(node.g);
+            Console.WriteLine();
+            if (node.state.GetLength(0) == 3)
+                if (node.parent != null)
+                    print_state(node.parent, size);
+                else
+                    Console.Write("");
         }
         static int calculateHamming(int[,] puzzle)
         {
             int hamming = 0;
             int c = 1;
-            for (int i = 0; i < puzzle.GetLength(0); i++)
+            int len = puzzle.GetLength(0);
+            for (int i = 0; i < len; i++)
             {
-                for (int j = 0; j < puzzle.GetLength(0); j++)
+                for (int j = 0; j < len; j++)
                 {
                     if ((i + j + c) == puzzle[i, j] || puzzle[i, j] == 0) { }
                     else { hamming = hamming + 1; }
                 }
-                c = c + puzzle.GetLength(0) - 1;
+                c = c + len - 1;
             }
             return hamming;
         }
         static int calculateMenhatten(int[,] puzzle)
         {
             int DistanceSum = 0;
-            for (int i = 0; i < puzzle.GetLength(0); i++)
+
+            int size = puzzle.GetLength(0);
+            for (int i = 0; i < size; i++)
             {
-                for (int j = 0; j < puzzle.GetLength(0); j++)
+                for (int j = 0; j < size; j++)
                 {
                     if (puzzle[i, j] != 0)
                     {
-                        int x = (puzzle[i, j] - 1) / puzzle.GetLength(0);
-                        int y = (puzzle[i, j] - 1) % puzzle.GetLength(0);
+                        int x = (puzzle[i, j] - 1) / size;
+                        int y = (puzzle[i, j] - 1) % size;
                         int dx;
-                        if (x > -i)
+                        if (x > i)
                             dx = x - i;
                         else
                             dx = i - x;
@@ -74,7 +89,7 @@ namespace N_puzzle
                             dy = y - j;
                         else
                             dy = j - y;
-                        DistanceSum += Math.Abs(dx) + Math.Abs(dy);
+                        DistanceSum += dx + dy;
                     }
                 }
             }
