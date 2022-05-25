@@ -8,19 +8,21 @@ namespace N_puzzle
 {
     class Program
     {
-        static int a;
+        static int choice;
         static PriorityQueue pQ = new PriorityQueue();
         static HashSet<int> myhash1 = new HashSet<int>();
-        public static int g = 0;
+        public static int level = 0;
         public static int[,] goal;
 
-        /////// 
-        static bool isSolvable(int[] puzzle, int size, int index)
+        //O(S^2)
+        static bool isSolvable(int[] puzzle, int n, int index)
         {
+            //If Size Odd & Inversion is even then Solvable 
             int inversions = 0;
 
-            for (int i = 0; i < size * size - 1; i++)
-                for (int j = i + 1; j < size * size; j++)
+            //Check Inverstions -> H.M Inversions in the Puzzle ?
+            for (int i = 0; i < n * n - 1; i++)
+                for (int j = i + 1; j < n * n; j++)
                 {
                     if (puzzle[i] != 0 && puzzle[j] != 0 && puzzle[i] > puzzle[j])
                     {
@@ -28,25 +30,38 @@ namespace N_puzzle
                     }
                 }
 
-            if (size % 2 == 0 && inversions % 2 == 0 && (size - index) % 2 == 0)
+            //Size is Even
+
+            //Inversion is Even & Blank Even from Buttom Posistion
+            if (n % 2 == 0 && inversions % 2 == 0 && (n - index) % 2 == 0)
             {
+                //Not Solvable
                 return false;
             }
 
-            else if (size % 2 == 0 && inversions % 2 != 0 && (size - index) % 2 == 0)
+            //Inversion is Odd & Blank is even from bottom Position
+            else if (n % 2 == 0 && inversions % 2 != 0 && (n - index) % 2 == 0)
             {
+                //Solvable 
                 return true;
             }
 
-            else if (size % 2 == 0 && inversions % 2 == 0 && (size - index) % 2 != 0)
+            //Inversion is Even & Blank Size from bottom Positions is ODD
+            else if (n % 2 == 0 && inversions % 2 == 0 && (n - index) % 2 != 0)
             {
+                //Solvable
                 return true;
             }
 
+            //Size is ODD
+
+            //IF Inversion is ODD return False 
+            //IF Inversion is Even return True
             return (inversions % 2 == 0);
         }
 
-        static int x;
+        //O(S) O(N^2)
+        static int hashGoal;
         public static void initial_state(int[,] puzzle, int n)
         {
             //Set Goal 
@@ -68,34 +83,50 @@ namespace N_puzzle
 
             //Last = 0 (Blank) Override number 9 in the loop
             goal[n - 1, n - 1] = 0;
-            x = GG(goal);
-            //Root Node 
-            Node intial = new Node(puzzle, null, g, 'R', a);
 
-            myhash1.Add(GG(intial.state));
+            //O(S) O(N^2)
+            hashGoal = hashing(goal);
+
+            //Root Node 
+            Node intial = new Node(puzzle, null, level, 'R', choice);
+
+            //O(S) O(N^2)
+            myhash1.Add(hashing(intial.state));
+
+            //O(Log(N)
             pQ.Enqueue(intial);
-            swap(intial, n);
+
+            //ELog(V)
+            AStar(intial, n);
         }
 
-        public static int GG(int[,] array)
+        //O(N^2) O(S)
+        public static int hashing(int[,] array)
         {
-            int hash = 17;
+            int hash = 1;
             int arlenght = array.GetLength(0);
+
             for (int i = 0; i < arlenght; i++)
             {
                 for (int j = 0; j < arlenght; j++)
                 {
-                    hash = hash * 31 + array[i, j];
+                    hash = hash * 5 + array[i, j];
                 }
             }
             return hash;
         }
-        public static void swap(Node puzzle, int n)
+
+        //ELOG(V)
+        public static void AStar(Node puzzle, int n)
         {
+            //Looping on PQ till break 
             while (pQ.Count != 0)
             {
+                //Take least cost state
                 puzzle = pQ.Dequeue();
 
+                //Search for Blank State in the puzzle
+                //O(S)
                 int indexx = -1, indexy = -1;
                 for (int i = 0; i < n; i++)
                 {
@@ -114,15 +145,19 @@ namespace N_puzzle
                         break;
                     }
                 }
+
                 int yup = indexx - 1;
                 int ydown = indexx + 1;
                 int xright = indexy + 1;
                 int xleft = indexy - 1;
+
                 int[,] leftpuzzle = new int[n, n];
                 int[,] rightpuzzle = new int[n, n];
                 int[,] downpuzzle = new int[n, n];
                 int[,] uppuzzle = new int[n, n];
 
+                //O(S)
+                //Copying Puzzle -> Left / Right / Down / Up 
                 for (int i = 0; i < n; i++)
                 {
                     for (int j = 0; j < n; j++)
@@ -135,49 +170,58 @@ namespace N_puzzle
                     }
                 }
 
+                //O(1)
+                //if zero founded upward 
                 if (yup >= 0 && yup < n)
                 {
                     uppuzzle[indexx, indexy] = puzzle.state[yup, indexy];
                     uppuzzle[yup, indexy] = puzzle.state[indexx, indexy];
                 }
+                //if zero dounded downward
                 if (ydown >= 0 && ydown < n)
                 {
                     downpuzzle[indexx, indexy] = puzzle.state[ydown, indexy];
                     downpuzzle[ydown, indexy] = puzzle.state[indexx, indexy];
                 }
-
+                //if zero founded right
                 if (xright >= 0 && xright < n)
                 {
                     rightpuzzle[indexx, indexy] = puzzle.state[indexx, xright];
                     rightpuzzle[indexx, xright] = puzzle.state[indexx, indexy];
                 }
+                //if zero founded left
                 if (xleft >= 0 && xleft < n)
                 {
                     leftpuzzle[indexx, indexy] = puzzle.state[indexx, xleft];
                     leftpuzzle[indexx, xleft] = puzzle.state[indexx, indexy];
                 }
-                g++;
-                Node uppuzzle1 = new Node(uppuzzle, puzzle, g, 'u', a);
-                Node downpuzzle1 = new Node(downpuzzle, puzzle, g, 'd', a);
-                Node rightpuzzle1 = new Node(rightpuzzle, puzzle, g, 'r', a);
-                Node leftpuzzle1 = new Node(leftpuzzle, puzzle, g, 'l', a);
 
-                if (ydown < n && !myhash1.Contains(GG(downpuzzle)))
+                level++;
+
+                //O(S)
+                Node uppuzzle1 = new Node(uppuzzle, puzzle, level, 'u', choice);
+                Node downpuzzle1 = new Node(downpuzzle, puzzle, level, 'd', choice);
+                Node rightpuzzle1 = new Node(rightpuzzle, puzzle, level, 'r', choice);
+                Node leftpuzzle1 = new Node(leftpuzzle, puzzle, level, 'l', choice);
+
+                //O(1)
+                if (ydown < n && !myhash1.Contains(hashing(downpuzzle)))
                 {
                     pQ.Enqueue(downpuzzle1);
                 }
-                if (yup >= 0 && !myhash1.Contains(GG(uppuzzle)))
+                if (yup >= 0 && !myhash1.Contains(hashing(uppuzzle)))
                 {
                     pQ.Enqueue(uppuzzle1);
                 }
-                if (xleft >= 0 && !myhash1.Contains(GG(leftpuzzle)))
+                if (xleft >= 0 && !myhash1.Contains(hashing(leftpuzzle)))
                 {
                     pQ.Enqueue(leftpuzzle1);
                 }
-                if (xright < n && !myhash1.Contains(GG(rightpuzzle)))
+                if (xright < n && !myhash1.Contains(hashing(rightpuzzle)))
                 {
                     pQ.Enqueue(rightpuzzle1);
                 }
+
 
                 if (isEndState(pQ.Peek().state, n))
                 {
@@ -186,34 +230,20 @@ namespace N_puzzle
                     Console.WriteLine(pQ.Peek().g);
                     break;
                 }
+
                 else
                 {
-                    g = pQ.Peek().g;
-                    myhash1.Add(GG(pQ.Peek().state));
+                    //Extracting min from the opened list should be less than O(N) (e.g. logarithmic or constant time) O(1)
+                    level = pQ.Peek().g;
+                    myhash1.Add(hashing(pQ.Peek().state));
                 }
             }
         }
+
+        //O(N^2) O(S)
         static bool isEndState(int[,] puzzle, int n)
         {
-
-            //int i = 0, j = 0;
-            //while (i != n && j != n)
-            //{
-            //    if (goal[i, j] != puzzle[i, j])
-            //    {
-            //        return false;
-            //    }
-            //    else if (j == n - 1)
-            //    {
-            //        j = 0;
-            //        i++;
-            //    }
-            //    else
-            //    {
-            //        j++;
-            //    }
-            //}
-            if (x == GG(puzzle))
+            if (hashGoal == hashing(puzzle))
             {
 
                 return true;
@@ -222,24 +252,17 @@ namespace N_puzzle
             {
                 return false;
             }
-            //for (int i = 0; i < n; i++)
-            //{
-            //    for (int j = 0; j < n; j++)
-            //    {
-            //        if (goal[i, j] != puzzle[i, j]) return false;
-            //    }
-            //}
-            //return true;
+
         }
 
         static Stopwatch stopwatch = new Stopwatch();
-        static FileStream file = new FileStream("8 Puzzle (2).txt", FileMode.Open, FileAccess.Read);
+        static FileStream file = new FileStream("8 Puzzle (3).txt", FileMode.Open, FileAccess.Read);
         static StreamReader sr = new StreamReader(file);
+
         static void Main(string[] args)
         {
 
             //Read File From BIN 
-
             string line = sr.ReadLine();
             //N (Number of Puzzles)
             int n = int.Parse(line);
@@ -266,6 +289,7 @@ namespace N_puzzle
             int puzzle1DCounter = 0;
 
             //Read Puzzle from file (line)
+            //O(S)
             for (int i = 0; i < n; i++)
             {
                 string[] fromfile = line.Split(' ');
@@ -281,7 +305,6 @@ namespace N_puzzle
                     if (puzzle[i, j] == 0)
                     {
                         zeroIndex = i;
-
                     }
                 }
                 line = sr.ReadLine();
@@ -290,19 +313,22 @@ namespace N_puzzle
 
             if (isSolvable(puzzle1DArr, n, zeroIndex))
             {
-
                 Console.WriteLine("Solvable");
                 Console.WriteLine("1.Hamming or 2.Manhattan ?");
+
                 string distance = Console.ReadLine();
-                a = int.Parse(distance);
+                choice = int.Parse(distance);
+
                 stopwatch.Start();
-                if (a == 1)
+                if (choice == 1 || choice == 2)
                     initial_state(puzzle, n);
-                else if (a == 2)
-                    initial_state(puzzle, n);
+
                 else
                     Console.WriteLine("wrong choose..");
+
                 stopwatch.Stop();
+
+
                 Console.WriteLine("Elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds);
                 Console.WriteLine("Elapsed Time is {0} s", stopwatch.Elapsed.Seconds);
             }
