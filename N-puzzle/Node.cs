@@ -14,15 +14,16 @@ namespace N_puzzle
         public int[,] state;
         public char come_from;
 
-        public Node(int[,] puzzle, Node parent, int g, char came_from, int a)
+        //O(N^2) 
+        public Node(int[,] puzzle, Node parent, int g, char came_from, int choice)
         {
             this.g = g;
-            if (a == 1)
+            if (choice == 1)
             {
                 this.h = calculateHamming(puzzle);
                 this.cost = this.h + this.g;
             }
-            else if (a == 2)
+            else if (choice == 2)
             {
                 this.M = calculateMenhatten(puzzle);
                 this.cost = this.M + this.g;
@@ -31,6 +32,8 @@ namespace N_puzzle
             this.state = puzzle;
             this.come_from = came_from;
         }
+
+        //O(N^2)
         public void print_state(Node node, int size)
         {
             for (int i = 0; i < size; i++)
@@ -50,6 +53,8 @@ namespace N_puzzle
                 else
                     Console.Write("");
         }
+
+        //O(N^2)
         static int calculateHamming(int[,] puzzle)
         {
             int hamming = 0;
@@ -66,6 +71,8 @@ namespace N_puzzle
             }
             return hamming;
         }
+
+        //O(N^2)
         static int calculateMenhatten(int[,] puzzle)
         {
             int DistanceSum = 0;
