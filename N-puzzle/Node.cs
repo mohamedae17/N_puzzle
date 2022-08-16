@@ -9,6 +9,7 @@ namespace N_puzzle
         public int g;
         public int h;
         public int M;
+
         public int cost;
         public Node parent;
         public int[,] state;
